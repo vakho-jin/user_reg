@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block title %}შესვლა{% endblock %}
+{% block content %}
+    <h1>შესვლა</h1>
+    <form id="login-form">
+        <label for="username">სახელი:</label>
+        <input type="text" id="username" name="username" required>
+        <label for="password">პაროლი:</label>
+        <input type="password" id="password" name="password" required>
+        <button type="submit">შესვლა</button>
+    </form>
+    <p id="error" style="color: red;"></p>
+    <script>
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            try {
+                const response = await fetch('/api/login/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    localStorage.setItem('token', data.access);
+                    window.location.href = '/posts/';
+                } else {
+                    document.getElementById('error').textContent = data.error || 'შესვლა ვერ მოხერხდა';
+                }
+            } catch (err) {
+                document.getElementById('error').textContent = 'შეცდომა';
+            }
+        });
+    </script>
+{% endblock %}
